@@ -7,12 +7,10 @@ import json
 import sys
 
 class JavaFileProcessor:
-    """批量处理Java代码文件注释信息"""
     def __init__(self, projectDir):
         self.projectDir = projectDir
 
     def scanFile(self):
-        #扫码项目文件夹下所有的文件
         targetFilesList = []
 
         for dirPath, dirNames, fileNames in os.walk(self.projectDir):
@@ -22,8 +20,7 @@ class JavaFileProcessor:
         
         return targetFilesList
 
-    # def processFileContent(self, file, originalInfo, newInfo):
-    def replaceContent(self, file):
+    def configContent(self, file):
         config = {}
         print file.split(os.sep)[-1]
 
@@ -33,7 +30,7 @@ class JavaFileProcessor:
         properties = []
 
         for line in allLines:
-            if line.startwith("#"):
+            if line.startswith("#"):
                 pass
             else:
                 key = line.split("=")[0]
@@ -45,60 +42,32 @@ class JavaFileProcessor:
             properties.append(line)
 
         config['origin'] = allLines
-        config['replaces'] = properties
+        config['replace'] = properties
 
         return config
 
-    # def replaceContent(self, fileContent, targetTemplate):
-    #     template = json.loads(json.dumps(targetTemplate))
-    #     anotations = fileContent['anotations']
-
-    #     for index in range(len(anotations)):
-    #         line = anotations[index]
-
-    #         if "*" not in line:
-    #             continue
-
-    #         for key in template.keys():
-    #             if key in line:
-    #                 anotations[index] = key + template[key]
-
-    #     wholeContent = anotations + fileContent['codes']
-
-    #     return wholeContent
-
-    # def templateToJson(self, targetTemplateFile):
-    #     templateJson = {}
-
-    #     with open(targetTemplateFile, "r") as fp:
-    #         allLines = fp.readlines()
-    #     for line in allLines:
-    #         if ":" in line:
-    #             key = line[0:line.index(":") + 2]
-    #             value = line[line.index(":") + 2:]
-    #             templateJson[key] = value
-    #         elif " " in line[3:]:
-    #             key = line[0:line[3:].index(" ") + 4]
-    #             value = line[line[3:].index(" ") + 4:]
-    #             templateJson[key] = value
-    #         else:
-    #             key = line
-    #             value = ""
-    #             templateJson[key] = value
-
-    #     return templateJson
-
     def rewriteFile(self):
+        restoreContent = {}
+
         for file in self.scanFile():
-            replaceContent = self.replaceContent(file)
+            configContent = self.configContent(file)
+            print "OK"
+            restoreContent[file] = configContent['origin']
+            replaceContent = configContent['replace']
 
             with open(file, "w+") as fp:
                 fp.writelines(replaceContent)
 
+        self.gitBashProcess()
+
+        for key in restoreContent.keys():
+            with open(key, "w+") as fp:
+                fp.writelines(restoreContent[key])
+
     def gitBashProcess(self):
         count = 0
         gitCommand = raw_input("Please input git command:\n" + 
-            "1. git add .\n2. git commit -m \"***\"\n3. git push\n" + 
+            "1. git add ./<filePath>\n2. git commit -m \"***\"\n3. git push\n" + 
             "And in the end, please input '\q' to complete and quit.\n")
 
         while gitCommand != "\q" and gitCommand != "":
@@ -106,11 +75,11 @@ class JavaFileProcessor:
                 gitCommand = raw_input("Please input git command.\n")
                 continue
             
-            if count == 0 and gitCommand == "git add .":
+            if count == 0 and gitCommand.startswith("git add "):
                 count += 1
                 gitCommand = raw_input("2. git commit -m \"***\" : \n")
-            elif count == 0 and gitCommand != "git add .":
-                gitCommand = raw_input("1. git add . : \n")
+            elif count == 0 and not gitCommand.startswith("git add "):
+                gitCommand = raw_input("1. git add ./<filePath> : \n")
             elif count == 1 and gitCommand.startswith("git commit -m"):
                 count += 1
                 gitCommand = raw_input("3. git push : \n")
@@ -131,5 +100,5 @@ class JavaFileProcessor:
 
 if __name__ == '__main__':
     processor = JavaFileProcessor("demo")
-    # processor = JavaFileProcessor(sys.argv[1], sys.argv[2], sys.argv[3])
-    processor.gitBashProcess()
+    # processor = JavaFileProcessor(sys.argv[1])
+    processor.rewriteFile()
