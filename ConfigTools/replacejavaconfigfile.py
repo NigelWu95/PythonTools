@@ -98,7 +98,7 @@ class JavaFileProcessor:
     def gitBashProcess(self):
         count = 0
         gitCommand = raw_input("Please input git command:\n" + 
-            "1. git add .\n2. git commit\n3. git push\n" + 
+            "1. git add .\n2. git commit -m \"***\"\n3. git push\n" + 
             "And in the end, please input '\q' to complete and quit.\n")
 
         while gitCommand != "\q" and gitCommand != "":
@@ -108,14 +108,14 @@ class JavaFileProcessor:
             
             if count == 0 and gitCommand == "git add .":
                 count += 1
-                gitCommand = raw_input("2. git commit : \n")
+                gitCommand = raw_input("2. git commit -m \"***\" : \n")
             elif count == 0 and gitCommand != "git add .":
                 gitCommand = raw_input("1. git add . : \n")
-            elif count == 1 and gitCommand == "git commit":
+            elif count == 1 and gitCommand.startswith("git commit -m"):
                 count += 1
                 gitCommand = raw_input("3. git push : \n")
-            elif count == 1 and gitCommand != "git commit":
-                gitCommand = raw_input("2. git commit : \n")
+            elif count == 1 and not gitCommand.startswith("git commit -m"):
+                gitCommand = raw_input("2. git commit -m \"***\" : \n")
             elif count == 2 and gitCommand == "git push":
                 count += 1
                 gitCommand = raw_input("Please input '\q'\n")
