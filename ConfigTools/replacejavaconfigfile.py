@@ -124,7 +124,10 @@ class JavaFileProcessor:
             else:
                 gitCommand = raw_input("Please input git command or '\q'.\n")
 
-            os.popen(gitCommand).read()
+            if gitCommand == "" or gitCommand == "\q":
+                pass
+            else:
+                os.popen(gitCommand).read()
 
 if __name__ == '__main__':
     processor = JavaFileProcessor("demo")
