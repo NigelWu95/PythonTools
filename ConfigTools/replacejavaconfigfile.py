@@ -99,6 +99,5 @@ class JavaFileProcessor:
                 os.popen(gitCommand).read()
 
 if __name__ == '__main__':
-    processor = JavaFileProcessor("demo")
-    # processor = JavaFileProcessor(sys.argv[1])
+    processor = JavaFileProcessor(sys.argv[1])
     processor.rewriteFile()
