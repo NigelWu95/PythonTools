@@ -23,8 +23,7 @@ class JavaFileProcessor:
                     targetFilesList.append(os.path.join(dirPath, fileName))
         
         return targetFilesList
-
-    # def processFileContent(self, file, originalInfo, newInfo):
+    
     def getFileContent(self, file):
         with open(file, "r") as fp:
             allLines = fp.readlines()
