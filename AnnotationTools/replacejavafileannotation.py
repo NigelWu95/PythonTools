@@ -5,6 +5,8 @@ import os
 import re
 import json
 import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 class JavaFileProcessor:
     """批量处理Java代码文件注释信息"""
@@ -24,7 +26,6 @@ class JavaFileProcessor:
         
         return targetFilesList
 
-    # def processFileContent(self, file, originalInfo, newInfo):
     def getFileContent(self, file):
         with open(file, "r") as fp:
             allLines = fp.readlines()
@@ -54,7 +55,7 @@ class JavaFileProcessor:
 
         return fileContent
 
-    def replaceContent(self, fileContent, targetTemplate):
+    def replaceContent(self, fileContent, targetTemplate, packageName):
         template = json.loads(json.dumps(targetTemplate))
         anotations = fileContent['anotations']
 
@@ -63,6 +64,9 @@ class JavaFileProcessor:
 
             if "*" not in line:
                 continue
+
+            if "Package Name" in line:
+                anotations[index] = " * Package Name: wechat: " + packageName
 
             for key in template.keys():
                 if key in line:
@@ -95,14 +99,25 @@ class JavaFileProcessor:
 
     def rewriteFile(self):
         targetTemplate = self.templateToJson(self.targetTemplateFile)
+        print targetTemplate
 
         for file in self.scanFile():
+            print file + ":"
+            filePath = file.split(os.sep)
+            srcMainJavaIndex = filePath.index("java")
+            packagePath = filePath[srcMainJavaIndex + 1:-1]
+            packageName = ".".join(packagePath) + "\n"
+
             fileContent = self.getFileContent(file)
-            finalContent = self.replaceContent(fileContent, targetTemplate)
+            finalContent = self.replaceContent(fileContent, targetTemplate, packageName)
+
             with open(file, "w+") as fp:
                 fp.writelines(finalContent)
 
+            print "OK!"
+
 if __name__ == '__main__':
-    # processor = JavaFileProcessor("./codedemo", ".java", "./annotationtemplate.java")
+    # 三个参数依次是项目路径、修改注释的文件后缀、模板文件路径，如：
+    # processor = JavaFileProcessor("codedemo", ".java", "annotationtemplate.java")
     processor = JavaFileProcessor(sys.argv[1], sys.argv[2], sys.argv[3])
     processor.rewriteFile()
