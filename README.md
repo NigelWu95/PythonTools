@@ -4,5 +4,4 @@
 # replacejavaconfigfile.py
 ![image](https://github.com/NigelWu95/PythonTools/blob/master/docs/pictures/config_replace_use.png?raw=true)
 
-# replacejavafileannotation.py
 ![image](https://github.com/NigelWu95/PythonTools/blob/master/docs/pictures/annotation_replace_use.png?raw=true)
