@@ -103,6 +103,6 @@ class JavaFileProcessor:
                 fp.writelines(finalContent)
 
 if __name__ == '__main__':
-    # processor = JavaFileProcessor("./sdkdemo", ".java", "./annotationtemplate.java")
+    # processor = JavaFileProcessor("./codedemo", ".java", "./annotationtemplate.java")
     processor = JavaFileProcessor(sys.argv[1], sys.argv[2], sys.argv[3])
     processor.rewriteFile()
