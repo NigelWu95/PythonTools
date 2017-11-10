@@ -76,16 +76,19 @@ class JavaFileProcessor:
                 continue
             
             if count == 0 and gitCommand.startswith("git add "):
+                os.popen(gitCommand).read()
                 count += 1
                 gitCommand = raw_input("2. git commit -m \"***\" : \n")
             elif count == 0 and not gitCommand.startswith("git add "):
                 gitCommand = raw_input("1. git add ./<filePath> : \n")
             elif count == 1 and gitCommand.startswith("git commit -m"):
+                os.popen(gitCommand).read()
                 count += 1
                 gitCommand = raw_input("3. git push : \n")
             elif count == 1 and not gitCommand.startswith("git commit -m"):
                 gitCommand = raw_input("2. git commit -m \"***\" : \n")
             elif count == 2 and gitCommand == "git push":
+                os.popen(gitCommand).read()
                 count += 1
                 gitCommand = raw_input("Please input '\q'\n")
             elif count == 2 and gitCommand != "git push":
@@ -93,11 +96,8 @@ class JavaFileProcessor:
             else:
                 gitCommand = raw_input("Please input git command or '\q'.\n")
 
-            if gitCommand == "" or gitCommand == "\q":
-                pass
-            else:
-                os.popen(gitCommand).read()
-
 if __name__ == '__main__':
+    # 该参数表示要上传的代码路径名
+    # processor = JavaFileProcessor("demo")
     processor = JavaFileProcessor(sys.argv[1])
     processor.rewriteFile()
