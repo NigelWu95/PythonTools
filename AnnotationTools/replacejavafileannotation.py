@@ -23,7 +23,8 @@ class JavaFileProcessor:
                     targetFilesList.append(os.path.join(dirPath, fileName))
         
         return targetFilesList
-    
+
+    # def processFileContent(self, file, originalInfo, newInfo):
     def getFileContent(self, file):
         with open(file, "r") as fp:
             allLines = fp.readlines()
@@ -102,6 +103,6 @@ class JavaFileProcessor:
                 fp.writelines(finalContent)
 
 if __name__ == '__main__':
-    # processor = JavaFileProcessor("./sdkdemo", ".java", "./t.java")
+    # processor = JavaFileProcessor("./sdkdemo", ".java", "./annotationtemplate.java")
     processor = JavaFileProcessor(sys.argv[1], sys.argv[2], sys.argv[3])
     processor.rewriteFile()
